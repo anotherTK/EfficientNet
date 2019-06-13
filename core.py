@@ -2,7 +2,7 @@
 import torch
 import torch.distributed as dist
 from apex import amp
-from common import get_world_size, is_main_process
+from comm import get_world_size, is_main_process
 from utils import make_data_sampler
 
 
