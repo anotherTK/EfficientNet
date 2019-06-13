@@ -76,6 +76,7 @@ def do_train(
             loss = model(images, targets)
             # 显示loss
             loss_reduced = reduce_loss(loss)
+            meters.update(loss=loss_reduced)
             
             optimizer.zero_grad()
             with amp.scale_loss(loss, optimizer) as scaled_loss:
@@ -87,7 +88,7 @@ def do_train(
             end = time.time()
             meters.update(
                 time=batch_time,
-                data=data_time,
+                data=data_time
             )
             eta_seconds = meters.time.global_avg * (max_iter - iteration)
             eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
