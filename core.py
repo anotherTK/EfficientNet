@@ -90,7 +90,7 @@ def do_train(
                 time=batch_time,
                 data=data_time
             )
-            eta_seconds = meters.time.global_avg * (max_iter - iteration)
+            eta_seconds = meters.time.global_avg * (max_iter * (args.epochs - epoch -1 ) - iteration)
             eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
 
             # 显示训练状态
