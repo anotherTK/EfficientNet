@@ -54,7 +54,6 @@ def do_train(
         train_dataset,
         batch_size=args.batch_size,
         sampler=train_sampler,
-        shuffle=(not args.distributed),
         num_workers=4,
         pin_memory=True,
     )

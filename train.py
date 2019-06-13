@@ -2,7 +2,6 @@ import os
 import argparse
 import torch
 from apex import amp
-import torchvision
 
 from comm import synchronize
 from EfficientNet import EfficientNet
