@@ -20,7 +20,7 @@ def reduce_loss(loss):
     if world_size < 2:
         return loss
     with torch.no_grad():
-        all_loss = []
+        all_loss = loss.clone()
         dist.reduce(all_loss, dst=0)
         if dist.get_rank() == 0:
             all_loss /= world_size
