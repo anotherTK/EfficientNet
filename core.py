@@ -103,7 +103,7 @@ def do_train(
                             "iter: {iter}",
                             "{meters}",
                             "lr: {lr:.6f}",
-                            "max mem (GB): {memory:.0f}",
+                            "max mem (MB): {memory:.0f}",
                         ]
                     ).format(
                         eta=eta_string,

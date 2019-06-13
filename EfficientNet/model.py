@@ -208,6 +208,7 @@ class EfficientNet(nn.Module):
 
         # Loss函数
         self._loss = nn.CrossEntropyLoss()
+        
 
     def extract_features(self, inputs):
 

@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 import logging
 import os
 import sys
@@ -94,3 +95,13 @@ class MetricLogger(object):
         for name, meter in self.meters.items():
             s_str.append("{}: {:.4f} ({:.4f})".format(name, meter.median, meter.avg))
         return self.delimiter.join(s_str)
+
+def init_weight(model):
+    for name, parameters in model.named_parameters():
+        if 'bn' in name and 'weight' in name:
+            nn.init.constant_(parameters, 1)
+        else:
+            if 'weight' in name:
+                nn.init.kaiming_uniform_(parameters, a=1)
+            else:
+                nn.init.constant_(parameters, 0)

@@ -6,10 +6,11 @@ from apex import amp
 from comm import synchronize, get_rank
 from EfficientNet import EfficientNet
 from core import do_train
-from utils import setup_logger
+from utils import setup_logger, init_weight
 
 def train(args, local_rank, distributed):
     model = EfficientNet.from_name(args.arch)
+    init_weight(model)
     device = torch.device("cuda")
     model.to(device)
 
