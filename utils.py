@@ -39,7 +39,7 @@ def make_data_sampler(dataset, shuffle, distributed):
     return sampler
 
 
-def SmoothedValue(object):
+class SmoothedValue(object):
     # 参数平滑
     def __init__(self, window_size=20):
         self.deque = deque(maxlen=window_size)
