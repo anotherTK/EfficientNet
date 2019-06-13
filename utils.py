@@ -20,6 +20,8 @@ def setup_logger(name, save_dir, distributed_rank, filename="log.txt"):
     logger.addHandler(ch)
 
     if save_dir:
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
         fh = logging.FileHandler(os.path.join(save_dir, filename))
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(formatter)
