@@ -74,9 +74,6 @@ def main():
         )
         synchronize()
 
-    if not os.path.exists(args.output_dir):
-        os.makedirs(args.output_dir)
-
     logger = setup_logger("efficientnet", args.output_dir, get_rank())
     logger.info("Using {} GPUs".format(num_gpus))
     logger.info(args)
