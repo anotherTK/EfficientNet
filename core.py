@@ -2,6 +2,7 @@
 import os
 import torch
 import torch.distributed as dist
+import torchvision
 from apex import amp
 from comm import get_world_size, is_main_process
 from utils import make_data_sampler
