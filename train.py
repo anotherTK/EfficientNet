@@ -51,7 +51,7 @@ def main():
     )
     # TODO: 增加模型训练的设置
     parser.add_argument('--arch', type=str, default='efficientnet-b0')
-    parser.add_argument('--lr', type=float, default=0.1)
+    parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weight-decay', type=float, default=1e-4)
     parser.add_argument('--float16', type=bool, default=False)
