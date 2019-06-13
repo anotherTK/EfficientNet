@@ -92,5 +92,5 @@ class MetricLogger(object):
     def __str__(self):
         s_str = []
         for name, meter in self.meters.items():
-            s_str.append("{}: {:.4f} ({:.4f})".format(name, meter.median, meter.mean))
+            s_str.append("{}: {:.4f} ({:.4f})".format(name, meter.median, meter.avg))
         return self.delimiter.join(s_str)
