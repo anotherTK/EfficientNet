@@ -241,7 +241,7 @@ class EfficientNet(nn.Module):
 
         # 判断是否训练
         if self.training:
-            x = self._loss(inputs, targets)
+            x = self._loss(x, targets)
         return x
 
     @classmethod
