@@ -3,9 +3,10 @@ import argparse
 import torch
 from apex import amp
 
-from comm import synchronize
+from comm import synchronize, get_rank
 from EfficientNet import EfficientNet
 from core import do_train
+from utils import setup_logger
 
 def train(args, local_rank, distributed):
     model = EfficientNet.from_name(args.arch)
@@ -13,13 +14,14 @@ def train(args, local_rank, distributed):
     model.to(device)
 
     optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [60, 30, 10], gamma=0.1)
 
     amp_opt_level = 'O0'
     if args.float16:
         amp_opt_level = 'O1'
     model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
 
-    if args.distributed:
+    if distributed:
         model = torch.nn.parallel.DistributedDataParallel(
             model,
             device_ids=[local_rank],
@@ -32,6 +34,7 @@ def train(args, local_rank, distributed):
         args,
         model,
         optimizer,
+        scheduler,
         device,
     )
 
@@ -55,6 +58,9 @@ def main():
     parser.add_argument('--batch-size', type=int, default=64, help="Images per gpu")
     parser.add_argument('--epochs', type=int, default=120)
     parser.add_argument('--print-freq', type=int, default=100)
+    parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--output-dir', type=str, default='./output_dir')
+    parser.add_argument('--ckpt-freq', type=int, default=5)
 
     args = parser.parse_args()
     num_gpus = int(os.environ['WORLD_SIZE']) if 'WORLD_SIZE' in os.environ else 1
@@ -67,6 +73,13 @@ def main():
             init_method='env://',
         )
         synchronize()
+
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+
+    logger = setup_logger("efficientnet", args.output_dir, get_rank())
+    logger.info("Using {} GPUs".format(num_gpus))
+    logger.info(args)
 
     # 训练
     model = train(args, args.local_rank, args.distributed)
