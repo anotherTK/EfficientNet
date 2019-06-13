@@ -20,7 +20,7 @@ def train(args, local_rank, distributed):
     model, optimizer = amp.initialize(model, optimizer, opt_level=amp_opt_level)
 
     if args.distributed:
-        model = torch.nn.DistributedDataParallel(
+        model = torch.nn.parallel.DistributedDataParallel(
             model,
             device_ids=[local_rank],
             output_device=local_rank,
