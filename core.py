@@ -163,7 +163,6 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
     all_predictions = all_gather(predictions_per_gpu)
     if not is_main_process():
         return
-    predictions = []
     targets = []
     outputs = []
     for p_per_gpu in all_predictions:
@@ -172,15 +171,7 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
             targets.append(p[1])
     outputs = torch.cat(outputs)
     targets = torch.cat(targets)
-    print(outputs.shape)
-    print(targets.shape)
-    outputs.to(torch.device("cuda"))
-    targets.to(torch.device("cuda"))
-    print(outputs.shape)
-    print(targets.shape)
-    predictions.append(outputs)
-    predictions.append(targets)
-    return predictions
+    return (outputs, targets)
 
 
 def accuracy(output, target, topk=(1,)):
@@ -234,6 +225,6 @@ def do_eval(args, model, distributed):
     
     # 计算top1和top5
     if is_main_process():
-        acc1, acc5 = accuracy(predictions[0], predictions[1], topk=(1, 5))
+        acc1, acc5 = accuracy(predictions[0].to(torch.device("cuda")), predictions[1].to(torch.device("cuda")), topk=(1, 5))
         logger.info("accuracy: top-1/ {}, top5/ {}".format(acc1, acc5))
 
