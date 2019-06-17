@@ -153,7 +153,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 torch.cuda.synchronize()
                 timer.toc()
             outputs.to(cpu_device)
-        results_list.extend((outputs, targets))
+        results_list.append((outputs, targets))
     return results_list
 
 
@@ -172,8 +172,8 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
             print(p[0].shape)
             outputs.append(p[0])
             targets.append(p[1])
-    targets = torch.cat(targets)
     outputs = torch.cat(outputs)
+    targets = torch.cat(targets)
     predictions.append(outputs)
     predictions.append(targets)
     return predictions
