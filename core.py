@@ -227,5 +227,5 @@ def do_eval(args, model, distributed):
     # 计算top1和top5
     if is_main_process():
         acc1, acc5 = accuracy(predictions[0], predictions[1], topk=(1, 5))
-        logger.info("accuracy: top-1/ {}, top5/ {}".format(acc1, acc5))
+        logger.info("accuracy: top-1/ {}, top5/ {}".format(acc1.item(), acc5.item()))
 
