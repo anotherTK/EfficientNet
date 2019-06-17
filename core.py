@@ -206,7 +206,7 @@ def do_eval(args, model, distributed):
     val_dataset = torchvision.datasets.ImageFolder(
         valdir,
         torchvision.transforms.Compose([
-            torchvision.transforms.Resize(224),
+            torchvision.transforms.Resize((224,224)),
             torchvision.transforms.ToTensor(),
             normalize,
         ]))
