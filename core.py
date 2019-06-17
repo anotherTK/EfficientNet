@@ -168,12 +168,16 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
     outputs = []
     for p_per_gpu in all_predictions:
         for p in p_per_gpu:
-            print(type(p))
-            print(p[0].shape)
             outputs.append(p[0])
             targets.append(p[1])
     outputs = torch.cat(outputs)
     targets = torch.cat(targets)
+    print(outputs.shape)
+    print(targets.shape)
+    outputs.to(torch.device("cuda"))
+    target.to(torch.device("cuda"))
+    print(outputs.shape)
+    print(targets.shape)
     predictions.append(outputs)
     predictions.append(targets)
     return predictions
