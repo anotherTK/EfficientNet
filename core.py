@@ -144,17 +144,15 @@ def compute_on_dataset(model, data_loader, device, timer=None):
     cpu_device = torch.device("cpu")
     for _, batch in enumerate(tqdm(data_loader)):
         images, targets = batch
-        images.to(device)
-        targets.to(device)
         with torch.no_grad():
             if timer:
                 timer.tic()
-            outputs = model(images)
+            outputs = model(images.to(device))
             if timer:
                 # CPU和GPU同步
                 torch.cuda.synchronize()
                 timer.toc()
-            # outputs.to(cpu_device)
+            outputs.to(cpu_device)
         results_list.extend((outputs, targets))
     return results_list
 
@@ -172,8 +170,8 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
         for p in p_per_gpu:
             outputs.append(p[0])
             targets.append(p[1])
-    targets = torch.stack(targets)
-    outputs = torch.stack(outputs)
+    targets = torch.cat(targets)
+    outputs = torch.cat(outputs)
     predictions.append(outputs)
     predictions.append(targets)
     return predictions
