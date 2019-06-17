@@ -61,7 +61,7 @@ def main():
     parser.add_argument('--print-freq', type=int, default=100)
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--output-dir', type=str, default='./output_dir')
-    parser.add_argument('--ckpt-freq', type=int, default=5)
+    parser.add_argument('--ckpt-freq', type=int, default=1)
 
     args = parser.parse_args()
     num_gpus = int(os.environ['WORLD_SIZE']) if 'WORLD_SIZE' in os.environ else 1
