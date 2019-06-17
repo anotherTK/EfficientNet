@@ -168,6 +168,8 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
     outputs = []
     for p_per_gpu in all_predictions:
         for p in p_per_gpu:
+            print(type(p))
+            print(p[0].shape)
             outputs.append(p[0])
             targets.append(p[1])
     targets = torch.cat(targets)
