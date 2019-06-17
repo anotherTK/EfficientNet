@@ -123,7 +123,7 @@ def do_train(
             ckpt['model'] = model.state_dict()
             ckpt['optimizer'] = optimizer.state_dict()
             save_file = os.path.join(args.output_dir, "efficientnet-epoch-{}.pth".format(epoch))
-            torch.save(data, save_file)
+            torch.save(ckpt, save_file)
         
         # validate
         do_eval(args, model, args.distributed)
