@@ -9,6 +9,8 @@ from utils import make_data_sampler, MetricLogger
 import logging
 import time
 import datetime
+from tqdm import tqdm
+from comm import synchronize, all_gather, is_main_process
 
 
 def reduce_loss(loss):
@@ -122,6 +124,9 @@ def do_train(
             ckpt['optimizer'] = optimizer.state_dict()
             save_file = os.path.join(args.output_dir, "efficientnet-epoch-{}.pth".format(epoch))
             torch.save(data, save_file)
+        
+        # validate
+        do_eval(args, model, args.distributed)
 
     # 总体训练时长
     total_training_time = time.time() - start_training_time
@@ -132,4 +137,96 @@ def do_train(
         )
     )
 
+
+def compute_on_dataset(model, data_loader, device, timer=None):
+    model.eval()
+    results_list = []
+    cpu_device = torch.device("cpu")
+    for _, batch in enumerate(tqdm(data_loader)):
+        images, targets = batch
+        with torch.no_grad():
+            if timer:
+                timer.tic()
+            outputs = model(images.to(device))
+            if timer:
+                # CPU和GPU同步
+                torch.cuda.synchronize()
+                timer.toc()
+            outputs.to(cpu_device)
+        results_list.extend((outputs, targets))
+    return results_list
+
+
+def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
+    """return the data_list of each rank
+    """
+    all_predictions = all_gather(predictions_per_gpu)
+    if not is_main_process():
+        return
+    predictions = []
+    targets = []
+    outputs = []
+    for p_per_gpu in all_predictions:
+        for p in p_per_gpu:
+            outputs.append(p[0])
+            targets.append(p[1])
+    targets = torch.stack(targets)
+    outputs = torch.stack(outputs)
+    predictions.append(outputs)
+    predictions.append(targets)
+    return predictions
+
+
+def accuracy(output, target, topk=(1,)):
+    """Computes the accuracy over the k top predictions for the specified values of k"""
+    with torch.no_grad():
+        maxk = max(topk)
+        batch_size = target.size(0)
+
+        _, pred = output.topk(maxk, 1, True, True)
+        pred = pred.t()
+        correct = pred.eq(target.view(1, -1).expand_as(pred))
+
+        res = []
+        for k in topk:
+            correct_k = correct[:k].view(-1).float().sum(0, keepdim=True)
+            res.append(correct_k.mul_(100.0 / batch_size))
+        return res
+
+def do_eval(args, model, distributed):
+    device = torch.device("cuda")
+    logger = logging.getLogger("efficientnet.inference")
+    logger.info("Start inference")
+    # 数据
+    valdir = os.path.join(args.data, 'val')
+    normalize = torchvision.transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    )
+    val_dataset = torchvision.datasets.ImageFolder(
+        valdir,
+        torchvision.transforms.Compose([
+            torchvision.transforms.Resize(224),
+            torchvision.transforms.ToTensor(),
+            normalize,
+        ]))
+
+    val_sampler = make_data_sampler(val_dataset, False, distributed)
+    data_loader = torch.utils.data.DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        sampler=val_sampler,
+        num_workers=args.workers,
+        pin_memory=True,
+    )
+
+    predictions = compute_on_dataset(model, data_loader, device)
+    # 每个进程同步
+    synchronize()
+    # 汇总每个进程的inference结果
+    predictions = _accumulate_predictions_from_multiple_gpus(predictions)
+    
+    # 计算top1和top5
+    acc1, acc5 = accuracy(output, target, topk=(1, 5))
+    logger.info("accuracy: top-1/ {}, top5/ {}".format(acc1, acc5))
 

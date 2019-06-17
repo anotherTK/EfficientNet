@@ -5,7 +5,7 @@ from apex import amp
 
 from comm import synchronize, get_rank
 from EfficientNet import EfficientNet
-from core import do_train
+from core import do_train, do_eval
 from utils import setup_logger, init_weight
 
 def train(args, local_rank, distributed):
@@ -82,7 +82,7 @@ def main():
     # 训练
     model = train(args, args.local_rank, args.distributed)
     if not args.skip_test:
-        run_test(args, model, args.distributed)
+        do_eval(args, model, args.distributed)
     
 
 
