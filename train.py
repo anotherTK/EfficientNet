@@ -15,7 +15,7 @@ def train(args, local_rank, distributed):
     model.to(device)
 
     optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [60, 90], gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [80, 110], gamma=0.1)
 
     amp_opt_level = 'O0'
     if args.float16:
@@ -51,13 +51,13 @@ def main():
     )
     # TODO: 增加模型训练的设置
     parser.add_argument('--arch', type=str, default='efficientnet-b0')
-    parser.add_argument('--lr', type=float, default=0.01)
+    parser.add_argument('--lr', type=float, default=0.05)
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weight-decay', type=float, default=1e-4)
     parser.add_argument('--float16', type=bool, default=False)
     parser.add_argument('--data', type=str, default='data/')
     parser.add_argument('--batch-size', type=int, default=64, help="Images per gpu")
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=120)
     parser.add_argument('--print-freq', type=int, default=100)
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--output-dir', type=str, default='./output_dir')
