@@ -154,6 +154,7 @@ def compute_on_dataset(model, data_loader, device, timer=None):
                 timer.toc()
             outputs.to(cpu_device)
         results_list.append((outputs, targets))
+    print(results_list[0][0])
     return results_list
 
 
