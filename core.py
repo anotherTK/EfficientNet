@@ -175,7 +175,7 @@ def _accumulate_predictions_from_multiple_gpus(predictions_per_gpu):
     print(outputs.shape)
     print(targets.shape)
     outputs.to(torch.device("cuda"))
-    target.to(torch.device("cuda"))
+    targets.to(torch.device("cuda"))
     print(outputs.shape)
     print(targets.shape)
     predictions.append(outputs)
