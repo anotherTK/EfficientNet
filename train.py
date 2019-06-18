@@ -58,7 +58,7 @@ def main():
     parser.add_argument('--float16', type=bool, default=False)
     parser.add_argument('--data', type=str, default='data/')
     parser.add_argument('--batch-size', type=int, default=64, help="Images per gpu")
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=120)
     parser.add_argument('--print-freq', type=int, default=100)
     parser.add_argument('--workers', type=int, default=8)
     parser.add_argument('--output-dir', type=str, default='./output_dir')
