@@ -14,8 +14,8 @@ def train(args, local_rank, distributed):
     device = torch.device("cuda")
     model.to(device)
 
-    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, [60, 90], gamma=0.1)
+    optimizer = torch.optim.RMSprop(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(3, 120, 3)), gamma=0.97)
 
     amp_opt_level = 'O0'
     if args.float16:
@@ -38,6 +38,7 @@ def train(args, local_rank, distributed):
         scheduler,
         device,
     )
+    return model
 
 
 def main():
@@ -51,9 +52,9 @@ def main():
     )
     # TODO: 增加模型训练的设置
     parser.add_argument('--arch', type=str, default='efficientnet-b0')
-    parser.add_argument('--lr', type=float, default=0.05)
+    parser.add_argument('--lr', type=float, default=0.256)
     parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--weight-decay', type=float, default=1e-4)
+    parser.add_argument('--weight-decay', type=float, default=1e-5)
     parser.add_argument('--float16', type=bool, default=False)
     parser.add_argument('--data', type=str, default='data/')
     parser.add_argument('--batch-size', type=int, default=64, help="Images per gpu")
