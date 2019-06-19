@@ -15,7 +15,7 @@ def train(args, local_rank, distributed):
     model.to(device)
 
     optimizer = torch.optim.RMSprop(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(3, args.epochs, 3)), gamma=0.97)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(5, args.epochs, 5)), gamma=0.9)
 
     amp_opt_level = 'O0'
     if args.float16:
@@ -52,7 +52,7 @@ def main():
     )
     # TODO: 增加模型训练的设置
     parser.add_argument('--arch', type=str, default='efficientnet-b0')
-    parser.add_argument('--lr', type=float, default=0.256)
+    parser.add_argument('--lr', type=float, default=0.1)
     parser.add_argument('--momentum', type=float, default=0.9)
     parser.add_argument('--weight-decay', type=float, default=1e-5)
     parser.add_argument('--float16', type=bool, default=False)
