@@ -15,7 +15,7 @@ def train(args, local_rank, distributed):
     model.to(device)
 
     optimizer = torch.optim.RMSprop(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(5, args.epochs, 5)), gamma=0.9)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(3, args.epochs, 3)), gamma=0.9)
 
     amp_opt_level = 'O0'
     if args.float16:
