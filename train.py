@@ -14,7 +14,7 @@ def train(args, local_rank, distributed):
     device = torch.device("cuda")
     model.to(device)
 
-    optimizer = torch.optim.RMSprop(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = torch.optim.SGD(model.parameters(), args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, list(range(3, args.epochs, 3)), gamma=0.9)
 
     amp_opt_level = 'O0'
