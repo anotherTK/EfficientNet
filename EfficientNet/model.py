@@ -247,8 +247,8 @@ class EfficientNet(nn.Module):
 
     @classmethod
     def _check_model_name_is_valid(cls, model_name):
-        """目前官方只给了前四个预训练模型"""
-        num_models = 4
+        """目前官方只给了前六个预训练模型"""
+        num_models = 6
         valid_models = ['efficientnet_b'+str(i) for i in range(num_models)]
         if model_name.replace('-', '_') not in valid_models:
             raise ValueError('model_name should be one of: ' + ', '.join(valid_models))
